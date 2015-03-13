@@ -39,4 +39,4 @@ if __name__ == "__main__":
         sentences = sent_extractor.extract(page)
         for sent in sentences:
             print(sent)
-        break
+            print("=========================================================")
