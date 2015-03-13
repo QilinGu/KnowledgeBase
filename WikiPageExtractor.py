@@ -20,9 +20,12 @@ class WikiPageExtractor:
 
 if __name__ == "__main__":
     base_path = "/home/ezio/filespace/data/"
-    # xml_path = base_path + "zhwiki-20140508-pages-articles-multistream.xml"
-    xml_path = base_path + "sample.xml"
+    xml_path = base_path + "zhwiki-20140508-pages-articles-multistream.xml"
+    # xml_path = base_path + "sample.xml"
     extractor = WikiPageExtractor()
+    i = 0
     for page in extractor.extract(xml_path):
-        print(page)
-        print("\n\n\n\n\n\n\n\n\n\n\n\n")
+        i += 1
+        if i % 10000 == 0:
+            print(i)
+        # print("\n\n\n\n\n\n\n\n\n\n\n\n")
