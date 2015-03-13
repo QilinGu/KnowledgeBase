@@ -1,7 +1,11 @@
+import jieba
 import jieba.posseg as pseg
 from WikiSentExtractor import sent_extract
 
 class POSTagger:
+
+    def __init__(self):
+        jieba.enable_parallel(2)
 
     def tag(self, sent):
         token_list = list(pseg.cut(sent))
@@ -15,6 +19,7 @@ def pos_tag():
             yield token_list
 
 if __name__ == "__main__":
-    for token in pos_tag():
-        print(token)
-    print("\n======================================")
+    for token_list in pos_tag():
+        for token in token_list:
+            print(token)
+        print("\n======================================")
