@@ -1,13 +1,9 @@
-
 class Tokenizer:
 
-    def sent_tokenize(text):
+    def word_tokenize(self, sent):
         pass
 
-    def word_tokenize(sentence):
-        pass
-
-    def tokenize(text):
+    def tokenize(self, sentences):
         pass
 
 if __name__ == "__main__":

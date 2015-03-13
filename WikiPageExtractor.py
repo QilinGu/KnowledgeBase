@@ -18,14 +18,15 @@ class WikiPageExtractor:
                 if line == "  </page>\n" and drop == False:
                     yield page
 
-if __name__ == "__main__":
+def page_extract():
     base_path = "/home/ezio/filespace/data/"
     xml_path = base_path + "zhwiki-20140508-pages-articles-multistream.xml"
     # xml_path = base_path + "sample.xml"
     extractor = WikiPageExtractor()
-    i = 0
     for page in extractor.extract(xml_path):
-        i += 1
-        if i % 10000 == 0:
-            print(i)
-        # print("\n\n\n\n\n\n\n\n\n\n\n\n")
+        yield page
+
+if __name__ == "__main__":
+    for page in page_extract():
+        print(page)
+        print("\n\n\n\n\n\n\n\n\n\n\n\n")

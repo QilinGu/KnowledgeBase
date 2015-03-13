@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as etree
 import re
-from WikiPageExtractor import WikiPageExtractor
+from WikiPageExtractor import page_extract
 
 class WikiSentExtractor:
 
@@ -27,16 +27,14 @@ class WikiSentExtractor:
         sentences = self.sent_tokenize(text)
         return sentences
 
+def sent_extract():
+    sent_extractor = WikiSentExtractor()
+    for page in page_extract():
+        sentences = sent_extractor.extract(page)
+        yield sentences
+
 
 if __name__ == "__main__":
-    base_path = "/home/ezio/filespace/data/"
-    # xml_path = base_path + "zhwiki-20140508-pages-articles-multistream.xml"
-    xml_path = base_path + "sample.xml"
-
-    page_extractor = WikiPageExtractor()
-    sent_extractor = WikiSentExtractor()
-    for page in page_extractor.extract(xml_path):
-        sentences = sent_extractor.extract(page)
-        for sent in sentences:
-            print(sent)
-            print("=========================================================")
+    for sent in sent_extract():
+        print(sent)
+        print("=========================================================")
