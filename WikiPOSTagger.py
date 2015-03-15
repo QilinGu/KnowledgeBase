@@ -13,13 +13,12 @@ class POSTagger:
 
 def pos_tag():
     pos_tagger = POSTagger()
-    for sentences in sent_extract():
-        for sent in sentences:
-            token_list = pos_tagger.tag(sent)
-            yield token_list
+    for sent in sent_extract():
+        token_list = pos_tagger.tag(sent)
+        yield token_list
 
 if __name__ == "__main__":
     for token_list in pos_tag():
         for token in token_list:
-            print(token)
+            print(token, end = ' ')
         print("\n======================================")
