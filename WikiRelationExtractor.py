@@ -1,4 +1,4 @@
-class RelationExtractor:
+class WikiRelationExtractor:
 
     def extract(sentences):
         pass

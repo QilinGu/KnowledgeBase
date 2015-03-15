@@ -29,8 +29,8 @@ class WikiPageExtractor:
 
 def page_extract():
     base_path = "/home/ezio/filespace/data/"
-    xml_path = base_path + "zhwiki-20140508-pages-articles-multistream.xml"
-    # xml_path = base_path + "sample.xml"
+    # xml_path = base_path + "zhwiki-20140508-pages-articles-multistream.xml"
+    xml_path = base_path + "sample.xml"
     page_extractor = WikiPageExtractor()
     return page_extractor.extract(xml_path)
 
