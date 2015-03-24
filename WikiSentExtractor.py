@@ -3,6 +3,11 @@ from WikiTextExtractor import text_extract
 
 class WikiSentExtractor:
 
+    def __init__(self):
+        self.strip_pattern1 = re.compile(r'\[\[([^\|]*?)\]\]')
+        self.strip_pattern2 = re.compile(r'\[\[([^\|]*?)\|[^\|]*?\]\]')
+        self.strip_pattern3 = re.compile(r"'''(.*?)'''")
+
     def extract(self, text):
         pattern1 = re.compile("<ref.*?\/.*?>", re.S)
         pattern2 = re.compile("\[\[File:.*\]\]")
@@ -14,7 +19,14 @@ class WikiSentExtractor:
         sentences = pattern4.findall(text)
         sentences = [sent for sent in sentences if "http" not in sent]
         for sent in sentences:
-            yield sent
+            yield self.strip_sent(sent)
+            #yield sent
+
+    def strip_sent(self, sent):
+        sent = self.strip_pattern1.sub(r'\1', sent)
+        sent = self.strip_pattern2.sub(r'\1', sent)
+        sent = self.strip_pattern3.sub(r'\1', sent)
+        return sent
 
 def sent_extract():
     sent_extractor = WikiSentExtractor()

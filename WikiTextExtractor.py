@@ -11,7 +11,10 @@ class WikiTextExtractor:
 
 def text_extract():
     text_extractor = WikiTextExtractor()
+    i = 0
     for page in page_extract():
+        print('page' + str(i))
+        i += 1
         yield text_extractor.extract(page)
 
 if __name__ == "__main__":
