@@ -1,3 +1,4 @@
+import sys
 import re
 from WikiTextExtractor import text_extract
 
@@ -32,9 +33,13 @@ def sent_extract():
     sent_extractor = WikiSentExtractor()
     for text in text_extract():
         for sent in sent_extractor.extract(text):
-            yield sent
+            if type(sent) == str:
+                yield sent
 
 if __name__ == "__main__":
+    file_path = "/home/ezio/filespace/data/sentences.txt"
+    f = open(file_path, 'w')
     for sent in sent_extract():
-        print(sent)
-        print("=========================================================")
+        f.write(sent + '\n')
+        #print(sent)
+        #print("=========================================================")
