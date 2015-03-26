@@ -33,8 +33,7 @@ def sent_extract():
     sent_extractor = WikiSentExtractor()
     for text in text_extract():
         for sent in sent_extractor.extract(text):
-            if type(sent) == str:
-                yield sent
+            yield sent
 
 if __name__ == "__main__":
     file_path = "/home/ezio/filespace/data/sentences.txt"
