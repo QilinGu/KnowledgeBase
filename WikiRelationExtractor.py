@@ -15,13 +15,14 @@ class WikiRelationExtractor:
     # middle_length: 限制中缀长度，主体和客体隔太远认为不可靠，丢弃
     # suffix_length: 限制后缀长度
     # occurence_count: 如果支持一个pattern的occurence太少，认为不可靠，丢弃
-    def __init__(self, filename, relation_list, prefix_length, middle_length, suffix_length, occurence_count):
+    def __init__(self, filename, relation_list, prefix_length, middle_length, suffix_length, occurence_count, mergence_count):
         self.filename = filename
         self.relation_list = relation_list
         self.prefix_length = prefix_length
         self.middle_length = middle_length
         self.suffix_length = suffix_length
         self.occurence_count = occurence_count
+        self.mergence_count = mergence_count
 
     def occurence_phase(self):
         for sent in  open(self.filename):
@@ -71,26 +72,32 @@ class WikiRelationExtractor:
         def max_common_fix(string_list, type):
             def slice(string, length, type):
                 if type == 'suffix':
-                    return string[len(string) - length:]
+                    begin = len(string) - length
+                    if begin < 0: begin = 0
+                    return string[begin : ]
                 else:
-                    return string[0:length]
+                    end = length
+                    if end > len(string): end = len(string)
+                    return string[0 : end]
+
             assert type == 'prefix' or type == 'suffix'
             length = 0
             go_on = True
             while go_on:
                 length += 1
-                for i, string in enumerate(string_list):
-                    if length > len(string):
-                        go_on = False
-                        break
-                    if i == 0:
-                        standard = slice(string, length, type)
-                    suffix = slice(string, length, type)
-                    if suffix != standard:
-                        go_on = False
-                        break
+                if (type == 'prefix' and length > self.prefix_length): break
+                if (type == 'suffix' and length > self.suffix_length): break
+                mergence_dict = defaultdict(lambda: 0)
+                for string in string_list:
+                    mergence_dict[slice(string, length, type)] += 1
+                if len(mergence_dict) > self.mergence_count: break
             length -= 1
-            return slice(string_list[0], length, type)
+            mergence_dict = defaultdict(lambda: 0)
+            for string in string_list:
+                mergence_dict[slice(string, length, type)] += 1
+            for (key, value) in sorted(mergence_dict.items(), key = lambda x: x[1], reverse = True):
+                if key != '': return key
+            return ''
 
         for relation in self.relation_list:
             relation.pattern_list = [] # 清空上次迭代的pattern
@@ -99,7 +106,9 @@ class WikiRelationExtractor:
                 if key[1] == '': continue # middle不能为空字符串
                 # 注意最大公共前缀实际上是所有前缀的最大公共后缀！
                 prefix = max_common_fix([item[0] for item in value], 'suffix')
+                if prefix == '': continue
                 suffix = max_common_fix([item[1] for item in value], 'prefix')
+                if suffix == '': continue
                 pattern = {'order':key[0], 'prefix':prefix, 'middle':key[1], 'suffix':suffix}
                 relation.pattern_list.append(pattern)
 
@@ -128,6 +137,21 @@ class WikiRelationExtractor:
     def extract(sentences):
         pass
 
+def test_occurence_phase(extractor):
+    print("=============test_occurence_phase=============")
+    for relation in extractor.relation_list:
+        for key, values in relation.occurence_dict.items():
+            print(key)
+            for value in values:
+                print('  ', end = '')
+                print(value)
+
+def test_pattern_phase(extractor):
+    print("=============test_pattern_phase=============")
+    for relation in extractor.relation_list:
+        for pattern in relation.pattern_list:
+            print(pattern)
+
 if __name__ == "__main__":
     relation_list = []
     # relation_list.append(Relation("首都", [
@@ -152,7 +176,9 @@ if __name__ == "__main__":
     ]))
     filename = "/home/ezio/filespace/data/sents.txt"
     # filename = "/home/ezio/filespace/data/sentences.txt"
-    # 传参：filename, relation_list, prefix_length, middle_length, suffix_length, occurence_count:
-    ex = WikiRelationExtractor(filename, relation_list, 5, 5, 5, 3)
+    # 传参：filename, relation_list, prefix_length, middle_length, suffix_length, occurence_count, mergence_count
+    ex = WikiRelationExtractor(filename, relation_list, 5, 5, 5, 3, 2)
     ex.occurence_phase()
+    test_occurence_phase(ex)
     ex.pattern_phase()
+    test_pattern_phase(ex)
