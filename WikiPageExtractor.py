@@ -20,12 +20,14 @@ class WikiPageExtractor:
                 if line == "  <page>\n":
                     drop = False
                     page = ""
+                if "    <title>" in line and "</title>\n" in line:
+                    title = line[11:-9]
                 if line[:21] == "    <title>Wikipedia:" or line[:16] == "    <title>Help:":
                     drop= True
                 if drop == False:
                     page += line
                 if line == "  </page>\n" and drop == False:
-                    yield page
+                    yield page, title.replace('/', '-')
 
 def page_extract():
     base_path = "/home/ezio/filespace/data/"
@@ -35,6 +37,12 @@ def page_extract():
     return page_extractor.extract(xml_path)
 
 if __name__ == "__main__":
-    for page in page_extract():
-        print(page)
-        print("=========================================================")
+    base_path = '/home/ezio/filespace/data/wikipedia_pages/'
+    i = 0
+    for page, title in page_extract():
+        i += 1
+        if i % 100 == 0:
+            print(i)
+        f = open(base_path + title + '.xml', 'w')
+        f.write(page)
+        f.close()
