@@ -12,14 +12,14 @@ class WikiTextExtractor:
 def text_extract():
     i = 0
     text_extractor = WikiTextExtractor()
-    for page in page_extract():
+    for page, title in page_extract():
         i += 1
-        print(i)
+        # print(i)
         text = text_extractor.extract(page)
         if type(text) == str:
-            yield text
+            yield text, title
 
 if __name__ == "__main__":
-    for text in text_extract():
+    for text, title in text_extract():
         print(text)
         print("=========================================================")

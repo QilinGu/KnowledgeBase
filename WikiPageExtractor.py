@@ -41,8 +41,8 @@ if __name__ == "__main__":
     i = 0
     for page, title in page_extract():
         i += 1
-        if i % 100 == 0:
-            print(i)
+        # if i % 100 == 0:
+        #     print(i)
         f = open(base_path + title + '.xml', 'w')
         f.write(page)
         f.close()
