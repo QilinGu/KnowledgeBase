@@ -55,3 +55,5 @@ target/
 
 # data file
 *.txt
+# temporay file
+temp.*
