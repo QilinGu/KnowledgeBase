@@ -35,6 +35,6 @@ if __name__ == "__main__":
             i += 1
             if i % 100 == 0:
                 print(i)
-            if i % 10000 == 0:
+            if i % 100 == 0:
                 db.commit()
     db.commit()
