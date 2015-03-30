@@ -33,7 +33,11 @@ def scrawl_url(control_dict, data_dict):
                 print('url_queue size: ' + str(url_queue.qsize()))
                 url = url_queue.get()
             proxy = proxies[random.randint(0, proxies_count - 1)]
-            req = requests.get(url, proxies = {'http': proxy, 'https': proxy})
+            try:
+                req = requests.get(url, proxies = {'http': proxy, 'https': proxy})
+            except:
+                try_again = True
+                continue
             if req.status_code != 200:
                 try_again = True
             else:
@@ -134,9 +138,9 @@ def dump_to_disk(data_dict):
         url_list = queue_to_list(data_dict['url'])
         page_list = queue_to_list(data_dict['page'])
         subject_set = data_dict['subject']
-        with open(url_queue_dump,   'wb') as f: pickle.dump(url_list,    f); print('url dumped!')
-        with open(page_queue_dump,  'wb') as f: pickle.dump(page_list,   f); print('page dumped!')
-        with open(subject_set_dump, 'wb') as f: pickle.dump(subject_set, f); print('subject dumped!')
+        with open(url_queue_dump,   'wb') as f: pickle.dump(url_list,    f); print(str(len(url_list))    + ' url dumped!')
+        with open(page_queue_dump,  'wb') as f: pickle.dump(page_list,   f); print(str(len(page_list))   + ' page dumped!')
+        with open(subject_set_dump, 'wb') as f: pickle.dump(subject_set, f); print(str(len(subject_set)) + ' subject dumped!')
     except:
         print("要完要完！dump不下去！")
 
