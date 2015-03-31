@@ -1,6 +1,6 @@
 import requests
+import traceback
 
-# 妈蛋这里一定要回来用正则重写！！！
 class WikiEntityRecognizer:
 
     def __init__(self):
@@ -11,12 +11,16 @@ class WikiEntityRecognizer:
 
     def recognize(self, sent):
         url = "%sapi_key=%s&text=%s&format=%s&pattern=%s" % (self.base_url, self.api_key, sent, self.result_format, self.pattern)
-        result = requests.get(url)
+        try:
+            result = requests.get(url)
+        except:
+            print("get url raise an exception!")
+            print(traceback.format_exc())
+            return "### 获取url异常！"
         if result.status_code ==  200:
             return result.text
         else:
-            print("错误响应" + result.status_code + "！！！")
-            return ""
+            return "### 错误响应" + str(result.status_code) + "！！！"
 
 if __name__ == "__main__":
     input_file_path = "/home/ezio/filespace/data/plain_sentences.txt"
@@ -29,7 +33,7 @@ if __name__ == "__main__":
     for line in input_file:
         sent = line.strip()
         ner_sent = recognizer.recognize(sent)
-        output_file.write(ner_sent + '\n')
-        # print(ner_sent)
+        # output_file.write(ner_sent + '\n')
+        print(ner_sent[0: min(len(ner_sent), 10)])
         i += 1
         print(i)
