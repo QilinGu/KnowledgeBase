@@ -1,74 +1,35 @@
-import jieba
-from WikiPOSTagger import pos_tag
+import requests
 
 # 妈蛋这里一定要回来用正则重写！！！
 class WikiEntityRecognizer:
 
-    def recognize(self, token_list):
-        token_list = self.join_entity(token_list, "'", "'", 3)
-        token_list = self.join_entity(token_list, "[", "]", 2)
-        return token_list
+    def __init__(self):
+        self.base_url = "http://ltpapi.voicecloud.cn/analysis/?"
+        self.api_key = "A3Q1y6d97QjSAzKAIaFLlN5LXItLoP2MpzAZLH6z"
+        self.pattern = "ner"
+        self.result_format = "plain"
 
-    def join_entity(self, token_list, left_del, right_del, repeat_count):
-        left_count = 0
-        right_count = 0
-        inside = False
-        new_token_list = []
-
-        for i, token in enumerate(token_list):
-            if token.word == left_del:
-                left_count += 1
-            elif token.word == right_del:
-                right_count += 1
-            else:
-                if left_count == repeat_count:
-                    inside = True
-                    begin_index = i
-                elif right_count == repeat_count:
-                    inside = False
-                    end_index = i - 2
-                    entity = "".join([token.word for token in token_list[begin_index:end_index]])
-                    print(entity)
-                    new_token = jieba.posseg.pair(entity, 'NE')
-                left_count = right_count = 0
-                new_token_list.append(token)
-        return new_token_list
-
-"""
-    def recognize(self, token_list):
-        quote_count = 0
-        quote_hit = False
-        new_token_list = []
-
-        for i, token in enumerate(token_list):
-            if token.word == "'":
-                if quote_hit == True:
-                    quote_count -= 1
-                else:
-                    quote_count += 1
-            elif quote_hit == False:
-                new_token_list.append(token)
-            if quote_count == 3 and quote_hit == False:
-                quote_hit = True
-                begin_index = i + 1
-            elif quote_count == 0 and quote_hit == True:
-                quote_hit = False
-                end_index = i - 2
-                entity = ''.join([token.word for token in token_list[begin_index : end_index]])
-                new_token = jieba.posseg.pair(entity, 'NE')
-                new_token_list.append(new_token)
-
-        return new_token_list
-"""
-
-def entity_recognize():
-    entity_recognizer = WikiEntityRecognizer()
-    for token_list in pos_tag():
-        yield entity_recognizer.recognize(token_list)
-        break
+    def recognize(self, sent):
+        url = "%sapi_key=%s&text=%s&format=%s&pattern=%s" % (self.base_url, self.api_key, sent, self.result_format, self.pattern)
+        result = requests.get(url)
+        if result.status_code ==  200:
+            return result.text
+        else:
+            print("错误响应" + result.status_code + "！！！")
+            return ""
 
 if __name__ == "__main__":
-    for token_list in entity_recognize():
-        for token in token_list:
-            print(token, end = ' ')
-        print("\n====================================")
+    input_file_path = "/home/ezio/filespace/data/plain_sentences.txt"
+    output_file_path = "/home/ezio/filespace/data/ner_sentences.txt"
+    input_file = open(input_file_path, 'r')
+    output_file = open(output_file_path, 'w', 1000)
+    recognizer = WikiEntityRecognizer()
+
+    i = 0
+    for line in input_file:
+        sent = line.strip()
+        ner_sent = recognizer.recognize(sent)
+        output_file.write(ner_sent + '\n')
+        # print(ner_sent)
+        i += 1
+        print(i)
