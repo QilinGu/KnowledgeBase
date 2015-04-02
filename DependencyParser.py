@@ -2,7 +2,7 @@ import sys
 import requests
 import traceback
 
-class WikiDependencyParser:
+class DependencyParser:
 
     def __init__(self):
         self.base_url = "http://ltpapi.voicecloud.cn/analysis/?"
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     output_file_path = "/home/ezio/filespace/data/dp_sentences.txt"
     input_file = open(input_file_path, 'r')
     output_file = open(output_file_path, 'a', 1000)
-    parser = WikiDependencyParser()
+    parser = DependencyParser()
 
     total_count = 0
     fail_count = 0

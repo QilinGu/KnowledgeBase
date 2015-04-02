@@ -1,7 +1,6 @@
 # import sys
 import jieba
 import jieba.posseg as pseg
-# from WikiSentExtractor import sent_extract
 
 class POSTagger:
 
