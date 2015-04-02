@@ -1,3 +1,4 @@
+import sys
 import requests
 import traceback
 
@@ -29,19 +30,24 @@ if __name__ == "__main__":
     input_file_path = "/home/ezio/filespace/data/plain_sentences.txt"
     output_file_path = "/home/ezio/filespace/data/ner_sentences.txt"
     input_file = open(input_file_path, 'r')
-    output_file = open(output_file_path, 'w', 1000)
+    output_file = open(output_file_path, 'a', 1000)
     recognizer = WikiEntityRecognizer()
 
     total_count = 0
     fail_count = 0
     for line in input_file:
+        total_count += 1
+        print(total_count, end = ' ')
+        sys.stdout.flush()
+        if total_count <= 304262: continue
+
         sent = line.strip()
         ner_sent = recognizer.recognize(sent)
         ner_sent = "".join(ner_sent.split('\n'))
+
         if ner_sent == "### can't get url!!!":
             fail_count += 1
-        total_count += 1
-        print(total_count, end = ' ')
         print(fail_count, end = ' ')
+
         print(ner_sent[0: min(len(ner_sent), 20)])
         output_file.write(ner_sent + '\n')
