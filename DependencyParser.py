@@ -28,7 +28,7 @@ class DependencyParser:
 
 if __name__ == "__main__":
     input_file_path = "/home/ezio/filespace/data/backup/plain_sentences.txt"
-    output_file_path = "/home/ezio/filespace/data/dp_sentences.txt"
+    output_file_path = "/home/ezio/filespace/data/dpt_sentences.txt"
     input_file = open(input_file_path, 'r')
     output_file = open(output_file_path, 'a', 1000)
     parser = DependencyParser()
@@ -42,12 +42,12 @@ if __name__ == "__main__":
         if total_count <= 3416: continue
 
         sent = line.strip()
-        dp_sent = parser.parse(sent)
-        dp_sent = "".join(dp_sent.split('\n'))
+        dpt_sent = parser.parse(sent)
+        dpt_sent = "".join(dpt_sent.split('\n'))
 
-        if dp_sent == "### can't get url!!!":
+        if dpt_sent == "### can't get url!!!":
             fail_count += 1
         print(fail_count, end = ' ')
 
-        print(dp_sent[0: min(len(dp_sent), 20)])
-        output_file.write(dp_sent + '\n')
+        print(dpt_sent[0: min(len(dpt_sent), 20)])
+        output_file.write(dpt_sent + '\n')
