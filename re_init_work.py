@@ -3,7 +3,6 @@ import random
 import pickle
 import numpy
 import functools
-import time
 from feature_functions import fea_funcs
 
 def random_select_seed():
@@ -90,7 +89,6 @@ def boostrap_init_data():
     all_fea_vecs = sent_list_features(sent_list)
 
     print('get all_fea_vecs!')
-    time.sleep(3)
 
     training_dict = {}
     for line in open('/home/ezio/filespace/data/training_seeds.txt'):
@@ -105,7 +103,6 @@ def boostrap_init_data():
         training_dict[lino] = pair_set
 
     print('get training_dict!')
-    time.sleep(3)
 
     training_list = []
     testing_list = []
@@ -120,7 +117,6 @@ def boostrap_init_data():
             testing_list.append(fea_vec + [-1])
 
     print('get training_list testing_list!')
-    time.sleep(3)
 
     training_set = numpy.asarray(training_list)
     del training_list
