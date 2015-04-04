@@ -1,8 +1,10 @@
 import re
 import random
 import pickle
-from feature_functions import fea_funcs
 import numpy
+import functools
+import time
+from feature_functions import fea_funcs
 
 def random_select_seed():
     sent_list = pickle.load(open('/home/ezio/filespace/data/re_sent_list.data', 'rb'))
@@ -26,14 +28,14 @@ def dump_sent_list():
         dpt_sent = dpt_file.readline().strip()
         if pos_sent == '' or ner_sent == '' or dpt_sent == '': break
         if pos_sent == "### can't get url!!!" or ner_sent == "### can't get url!!!" or dpt_sent == "### can't get url!!!": continue
-        if re.search(r'\[.*\].*\[.*\]', ner_sent) == None: continue
+        if re.search(r'\[.*\]N[ihs] .* \[.*\]N[ihs]', ner_sent) == None: continue
         sent_list.append({'pos': pos_sent, 'ner': ner_sent, 'dpt': dpt_sent})
     pickle.dump(sent_list, dump_file)
     dump_file.close()
     return sent_list
 
 def pairwise_ner(ner_sent):
-    pattern = '\[.*?\]N[a-z]'
+    pattern = '\[.*?\]N[ihs]'
     nes = re.findall(pattern, ner_sent)
     nes = [''.join(ne.split()) for ne in nes]
     sps = re.split(pattern, ner_sent)
@@ -50,13 +52,15 @@ def pairwise_ner(ner_sent):
                     sent += nes[k]
                 else:
                     sent += nes_stripped[k]
+            sent += sps[ne_count]
             pairwise_ner_sents.append(sent)
             ne_pair = (nes_stripped[i], nes_stripped[j])
             ne_pairs.append(ne_pair)
     return pairwise_ner_sents, ne_pairs
 
 def sent_triple_features(pos_sent, ner_sent, dpt_sent, reverse):
-    return [func(pos_sent, ner_sent, dpt_sent, reverse) for func in fea_funcs]
+    fea_vec_list = [func(pos_sent, ner_sent, dpt_sent, reverse) for func in fea_funcs]
+    return functools.reduce(lambda x, y: x + y, fea_vec_list)
 
 def sent_dict_features(sent_dict, lino):
     pos_sent = sent_dict['pos']
@@ -75,6 +79,8 @@ def sent_dict_features(sent_dict, lino):
 def sent_list_features(sent_list):
     all_fea_vecs = []
     for lino, sent_dict in enumerate(sent_list):
+        print(lino, ' sent_dict')
+        #if lino > 10000: break
         fea_vecs = sent_dict_features(sent_dict, lino)
         all_fea_vecs.extend(fea_vecs)
     return all_fea_vecs
@@ -82,6 +88,9 @@ def sent_list_features(sent_list):
 def boostrap_init_data():
     sent_list = pickle.load(open('/home/ezio/filespace/data/re_sent_list.data', 'rb'))
     all_fea_vecs = sent_list_features(sent_list)
+
+    print('get all_fea_vecs!')
+    time.sleep(3)
 
     training_dict = {}
     for line in open('/home/ezio/filespace/data/training_seeds.txt'):
@@ -95,6 +104,9 @@ def boostrap_init_data():
             pair_set = set()
         training_dict[lino] = pair_set
 
+    print('get training_dict!')
+    time.sleep(3)
+
     training_list = []
     testing_list = []
     for fea_vec in all_fea_vecs:
@@ -107,8 +119,13 @@ def boostrap_init_data():
         else:
             testing_list.append(fea_vec + [-1])
 
+    print('get training_list testing_list!')
+    time.sleep(3)
+
     training_set = numpy.asarray(training_list)
+    del training_list
     testing_set = numpy.asarray(testing_list)
+    del testing_list
     pickle.dump(training_set, open('/home/ezio/filespace/data/training_set.data', 'wb'))
     pickle.dump(testing_set, open('/home/ezio/filespace/data/testing_set.data', 'wb'))
     return training_set, testing_set
