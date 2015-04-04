@@ -1,7 +1,7 @@
 import re
 import random
 import pickle
-import numpy
+#import numpy
 import functools
 from feature_functions import fea_funcs
 
@@ -108,8 +108,9 @@ def boostrap_init_data():
     testing_list = []
     for fea_vec in all_fea_vecs:
         lino = fea_vec[0]
+        pair = (fea_vec[1], fea_vec[2])
         if lino in training_dict:
-            if (fea_vec[0], fea_vec[1]) in training_dict[lino]:
+            if pair in training_dict[lino]:
                 training_list.append(fea_vec + [1])
             else:
                 training_list.append(fea_vec + [0])
@@ -118,12 +119,39 @@ def boostrap_init_data():
 
     print('get training_list testing_list!')
 
-    training_set = numpy.asarray(training_list)
+    '''
+    # numpy创建ndarray内存消耗太大，要及时删掉原始list，不然可能爆内存
+    lino_list = [vec[0] for vec in training_list]
+    pair_list = [vec[1:3] for vec in training_list]
+    feature_list = [vec[3:-1] for vec in training_list]
+    label_list = [vec[-1] for vec in training_list]
     del training_list
-    testing_set = numpy.asarray(testing_list)
+    lino_array = numpy.asarray(lino_list); del lino_list
+    pair_array = numpy.asarray(pair_list); del pair_list
+    feature_matrix = numpy.array(feature_list); del feature_list
+    label_array = numpy.asarray(label_list); del label_list
+    training_set = {'lino': lino_array, 'pair': pair_array, 'feature': feature_matrix, 'label': label_array}
+
+    lino_list = [vec[0] for vec in testing_list]
+    pair_list = [vec[1:3] for vec in testing_list]
+    feature_list = [vec[3:-1] for vec in testing_list]
+    score_list = [vec[-1] for vec in testing_list]
     del testing_list
+    lino_array = numpy.asarray(lino_list); del lino_list
+    pair_array = numpy.asarray(pair_list); del pair_list
+    feature_matrix = numpy.array(feature_list); del feature_list
+    score_array = numpy.asarray(score_list); del score_list
+    testing_set = {'lino': lino_array, 'pair': pair_array, 'feature': feature_matrix, 'score': score_array}
+
     pickle.dump(training_set, open('/home/ezio/filespace/data/training_set.data', 'wb'))
     pickle.dump(testing_set, open('/home/ezio/filespace/data/testing_set.data', 'wb'))
     return training_set, testing_set
 
 training_set, testing_set = boostrap_init_data()
+    '''
+
+    pickle.dump(training_list, open('/home/ezio/filespace/data/training_list.data', 'wb'))
+    pickle.dump(testing_list, open('/home/ezio/filespace/data/testing_list.data', 'wb'))
+    return training_list, testing_list
+
+training_list, testing_list = boostrap_init_data()
