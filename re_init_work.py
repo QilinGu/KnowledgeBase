@@ -3,6 +3,7 @@ import random
 import pickle
 #import numpy
 import functools
+import collections
 from feature_functions import fea_funcs
 
 def random_select_seed():
@@ -119,39 +120,23 @@ def boostrap_init_data():
 
     print('get training_list testing_list!')
 
-    '''
-    # numpy创建ndarray内存消耗太大，要及时删掉原始list，不然可能爆内存
-    lino_list = [vec[0] for vec in training_list]
-    pair_list = [vec[1:3] for vec in training_list]
-    feature_list = [vec[3:-1] for vec in training_list]
-    label_list = [vec[-1] for vec in training_list]
-    del training_list
-    lino_array = numpy.asarray(lino_list); del lino_list
-    pair_array = numpy.asarray(pair_list); del pair_list
-    feature_matrix = numpy.array(feature_list); del feature_list
-    label_array = numpy.asarray(label_list); del label_list
-    training_set = {'lino': lino_array, 'pair': pair_array, 'feature': feature_matrix, 'label': label_array}
-
-    lino_list = [vec[0] for vec in testing_list]
-    pair_list = [vec[1:3] for vec in testing_list]
-    feature_list = [vec[3:-1] for vec in testing_list]
-    score_list = [vec[-1] for vec in testing_list]
-    del testing_list
-    lino_array = numpy.asarray(lino_list); del lino_list
-    pair_array = numpy.asarray(pair_list); del pair_list
-    feature_matrix = numpy.array(feature_list); del feature_list
-    score_array = numpy.asarray(score_list); del score_list
-    testing_set = {'lino': lino_array, 'pair': pair_array, 'feature': feature_matrix, 'score': score_array}
-
-    pickle.dump(training_set, open('/home/ezio/filespace/data/training_set.data', 'wb'))
-    pickle.dump(testing_set, open('/home/ezio/filespace/data/testing_set.data', 'wb'))
-    return training_set, testing_set
-
-training_set, testing_set = boostrap_init_data()
-    '''
-
     pickle.dump(training_list, open('/home/ezio/filespace/data/training_list.data', 'wb'))
     pickle.dump(testing_list, open('/home/ezio/filespace/data/testing_list.data', 'wb'))
     return training_list, testing_list
 
-training_list, testing_list = boostrap_init_data()
+# training_list, testing_list = boostrap_init_data()
+
+def get_words():
+    word_dict = collections.defaultdict(lambda: 1)
+    for i, line in enumerate(open('/home/ezio/filespace/data/ner_sentences.txt')):
+        print(i, len(word_dict))
+        if re.search(r'\[.*\]Ns .* \[.*\]Ns', line) == None: continue
+        tokens = line.strip().split()
+        for token in tokens:
+            if len(token) > 2:
+                suffix = token[-2:]
+                if suffix == 'Ns' or suffix == 'Ni' or suffix == 'Nh': continue
+            word_dict[token.split('/')[0]] += 1
+    word_list = sorted(word_dict.items(), key = lambda x: x[1], reverse = True)
+    with open('/home/ezio/filespace/data/words.data', 'wb') as f:
+        pickle.dump([word[0] for word in word_list[:5000]], f)
