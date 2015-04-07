@@ -47,7 +47,7 @@ def pos_feature(pos_sent, ner_sent, dpt_sent, reverse):
     ner_prefix = "".join(fix_list[0].split())
     pre_token = ""
     for token in pos_sent.split():
-        if
+        pass
 
 fea_funcs = [ne_type, has_word,]
 

@@ -124,7 +124,7 @@ def boostrap_init_data():
     pickle.dump(testing_list, open('/home/ezio/filespace/data/testing_list.data', 'wb'))
     return training_list, testing_list
 
-# training_list, testing_list = boostrap_init_data()
+training_list, testing_list = boostrap_init_data()
 
 def get_words():
     word_dict = collections.defaultdict(lambda: 1)

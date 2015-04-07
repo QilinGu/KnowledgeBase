@@ -8,6 +8,8 @@
 知识库的相关研究工作
 ----知识库系统简介
 ----知识库系统的分类
+----举例
+--------DBpedia, KnowItAll, FreeBase, Knowledge Graph, YAGO-NAGA, ENtityCube, ReadTheWeb, Knowledge Vault, TextRunner（每个都介绍一段）
 ----常用的构建知识库系统的方法
 ----知识库规模和质量的评价标准
 ----本章小结
