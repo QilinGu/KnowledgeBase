@@ -53,7 +53,5 @@ docs/_build/
 # PyBuilder
 target/
 
-# data file
-*.txt
 # temporay file
 temp.*
