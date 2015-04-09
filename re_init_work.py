@@ -2,9 +2,8 @@ import re
 import random
 import pickle
 #import numpy
-import functools
 import collections
-from feature_functions import fea_funcs
+from feature_functions import get_feature
 
 def random_select_seed():
     sent_list = pickle.load(open('/home/ezio/filespace/data/re_sent_list.data', 'rb'))
@@ -28,8 +27,9 @@ def dump_sent_list():
         dpt_sent = dpt_file.readline().strip()
         if pos_sent == '' or ner_sent == '' or dpt_sent == '': break
         if pos_sent == "### can't get url!!!" or ner_sent == "### can't get url!!!" or dpt_sent == "### can't get url!!!": continue
-        if re.search(r'\[.*\]N[ihs] .* \[.*\]N[ihs]', ner_sent) == None: continue
+        if re.search(r'\[.+?\]N[ihs].+\[.+?\]N[ihs]', ner_sent) == None: continue
         sent_list.append({'pos': pos_sent, 'ner': ner_sent, 'dpt': dpt_sent})
+        print(len(sent_list))
     pickle.dump(sent_list, dump_file)
     dump_file.close()
     return sent_list
@@ -58,20 +58,16 @@ def pairwise_ner(ner_sent):
             ne_pairs.append(ne_pair)
     return pairwise_ner_sents, ne_pairs
 
-def sent_triple_features(pos_sent, ner_sent, dpt_sent, reverse):
-    fea_vec_list = [func(pos_sent, ner_sent, dpt_sent, reverse) for func in fea_funcs]
-    return functools.reduce(lambda x, y: x + y, fea_vec_list)
-
 def sent_dict_features(sent_dict, lino):
     pos_sent = sent_dict['pos']
     dpt_sent = sent_dict['dpt']
     pairwise_ner_sents, ne_pairs = pairwise_ner(sent_dict['ner'])
     fea_vecs = []
     for ner_sent, pair in zip(pairwise_ner_sents, ne_pairs):
-        raw_fea_vec = sent_triple_features(pos_sent, ner_sent, dpt_sent, reverse = False)
+        raw_fea_vec = get_feature(pos_sent, ner_sent, dpt_sent, reverse = False)
         fea_vec = [lino, pair[0], pair[1]] + raw_fea_vec
         fea_vecs.append(fea_vec)
-        raw_fea_vec = sent_triple_features(pos_sent, ner_sent, dpt_sent, reverse = True)
+        raw_fea_vec = get_feature(pos_sent, ner_sent, dpt_sent, reverse = True)
         fea_vec = [lino, pair[1], pair[0]] + raw_fea_vec
         fea_vecs.append(fea_vec)
     return fea_vecs
@@ -85,7 +81,7 @@ def sent_list_features(sent_list):
         all_fea_vecs.extend(fea_vecs)
     return all_fea_vecs
 
-def boostrap_init_data():
+def boostrap_train_test_data():
     sent_list = pickle.load(open('/home/ezio/filespace/data/re_sent_list.data', 'rb'))
     all_fea_vecs = sent_list_features(sent_list)
 
@@ -94,13 +90,15 @@ def boostrap_init_data():
     training_dict = {}
     for line in open('/home/ezio/filespace/data/training_seeds.txt'):
         splited_line = line.strip().split('#')
+        assert len(splited_line) == 1 or len(splited_line) == 2
         if len(splited_line) == 2:
             lino = int(splited_line[1].split()[0])
-            pair_list = [(pair.split('@')[0], pair.split('@')[1]) for pair in splited_line[0].split()]
+            pair_list = [tuple(pair.split('@')) for pair in splited_line[0].split()]
             pair_set = set(pair_list)
         else:
             lino = int(splited_line[0].split()[0])
             pair_set = set()
+        for pair in pair_set: assert len(pair) == 2
         training_dict[lino] = pair_set
 
     print('get training_dict!')
@@ -124,8 +122,6 @@ def boostrap_init_data():
     pickle.dump(testing_list, open('/home/ezio/filespace/data/testing_list.data', 'wb'))
     return training_list, testing_list
 
-training_list, testing_list = boostrap_init_data()
-
 def get_words():
     word_dict = collections.defaultdict(lambda: 1)
     for i, line in enumerate(open('/home/ezio/filespace/data/ner_sentences.txt')):
@@ -138,5 +134,28 @@ def get_words():
                 if suffix == 'Ns' or suffix == 'Ni' or suffix == 'Nh': continue
             word_dict[token.split('/')[0]] += 1
     word_list = sorted(word_dict.items(), key = lambda x: x[1], reverse = True)
-    with open('/home/ezio/filespace/data/words.data', 'wb') as f:
-        pickle.dump([word[0] for word in word_list[:5000]], f)
+    with open('/home/ezio/filespace/data/word_list.data', 'wb') as f:
+        pickle.dump([word[0] for word in word_list[:500]], f)
+    return word_list
+
+def get_pos():
+    pos_set = set()
+    temp_i = 0
+    temp_count = 0
+    for i, line in enumerate(open('/home/ezio/filespace/data/pos_sentences.txt', 'r')):
+        print(i, len(pos_set))
+        if len(pos_set) > temp_count:
+            temp_i = i
+            temp_count = len(pos_set)
+        if len(pos_set) == temp_count and i - temp_i > 50000:
+            break
+        for token in line.strip().split():
+            pos_set.add(token.split('/')[1])
+    pos_set.remove('')
+    pos_tag_list = list(pos_set)
+    pickle.dump(pos_tag_list, open('/home/ezio/filespace/data/pos_tag_list.data', 'wb'))
+    return pos_tag_list
+
+#sent_list = dump_sent_list()
+#training_list, testing_list = boostrap_train_test_data()
+#pos_tag_list = get_pos()

@@ -1,6 +1,5 @@
 import sys
 import requests
-import traceback
 
 class DependencyParser:
 
