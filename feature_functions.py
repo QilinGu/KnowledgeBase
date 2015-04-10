@@ -15,13 +15,18 @@ class BinaryFeatureFunction:
     def __init__(self, candidate_list):
         self.candidate_list = sorted(candidate_list)
         self.length = len(candidate_list)
+    def linear_search(self, target, index):
+        while index < self.length:
+            if target in list(self.candidate_list[index]):
+                return index
+        return -1
     def __call__(self, target_list):
         if type(target_list) != list: target_list = [target_list]
         feature = [0] * self.length
         start_index = 0
         for target in sorted(target_list):
-            try: start_index = self.candidate_list.index(target, start_index)
-            except: break
+            start_index = self.linear_search(target, start_index)
+            if start_index == -1: break
             else: feature[start_index] = 1
         return feature
 ne_type_list    = ['Nh', 'Ni', 'Ns']

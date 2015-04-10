@@ -1,11 +1,11 @@
 import re
 import random
 import pickle
+import collections
 from feature_functions import get_feature
 
-# 依赖于ner_sentences，不过一般不用重新生成
-'''
-def get_words():
+# 依赖于ner_sentences.txt需要重新生成
+def get_word_freq():
     word_dict = collections.defaultdict(lambda: 1)
     for i, line in enumerate(open('/home/ezio/filespace/data/ner_sentences.txt')):
         print(i, len(word_dict))
@@ -17,10 +17,19 @@ def get_words():
                 if suffix == 'Ns' or suffix == 'Ni' or suffix == 'Nh': continue
             word_dict[token.split('/')[0]] += 1
     word_list = sorted(word_dict.items(), key = lambda x: x[1], reverse = True)
-    with open('/home/ezio/filespace/data/word_list.data', 'wb') as f:
-        pickle.dump([word[0] for word in word_list[:500]], f)
+    with open('/home/ezio/filespace/data/word_freq.txt', 'w') as f:
+        for key, value in word_list.items():
+            f.write(key, value)
+            f.write('\n')
     return word_list
-'''
+
+# 依赖于word_list.txt需要重新生成
+def get_word():
+    word_list = []
+    for line in open('/home/ezio/filespace/data/word_list.txt'):
+        word_list.append(line.strip().split())
+    pickle.dump(word_list, open('/home/ezio/filespace/data/word_list.data', 'wb'))
+    return word_list
 
 # 依赖于pos_sentences，不过一般不用重新生成
 def get_pos():
@@ -173,4 +182,5 @@ if __name__ == "__main__":
     #random_select_seed()
     all_fea_vecs, training_dict, training_list, testing_list = boostrap_train_test_data()
     #pos_tag_list = get_pos()
+    #word_list = get_word()
     pass
