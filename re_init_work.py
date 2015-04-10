@@ -76,7 +76,9 @@ def pairwise_ner(ner_sent):
     return pairwise_ner_sents, ne_pairs
 
 # 被dump_sent_list_fea调用
-def sent_dict_features(sent_dict, lino):
+def sent_dict_features(sent_dict):
+    lino = sent_dict['lino']
+    print(lino, ' sent_dict')
     pos_sent = sent_dict['pos']
     dpt_sent = sent_dict['dpt']
     pairwise_ner_sents, ne_pairs = pairwise_ner(sent_dict['ner'])
@@ -116,10 +118,7 @@ def dump_sent_list_fea():
     # all_fea_vecs
     all_fea_vecs = []
     for sent_dict in sent_list:
-        lino = sent_dict['lino']
-        print(lino, ' sent_dict')
-        #if lino > 10000: break
-        fea_vecs = sent_dict_features(sent_dict, lino)
+        fea_vecs = sent_dict_features(sent_dict)
         all_fea_vecs.extend(fea_vecs)
     pickle.dump(all_fea_vecs, open('/home/ezio/filespace/data/all_fea_vecs.data', 'wb'))
 
@@ -178,9 +177,9 @@ def boostrap_train_test_data():
     return all_fea_vecs, training_dict, training_list, testing_list
 
 if __name__ == "__main__":
+    #pos_tag_list = get_pos()
+    #word_list = get_word()
     #sent_list, all_fea_vecs = dump_sent_list_fea()
     #random_select_seed()
     all_fea_vecs, training_dict, training_list, testing_list = boostrap_train_test_data()
-    #pos_tag_list = get_pos()
-    #word_list = get_word()
     pass
