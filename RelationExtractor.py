@@ -98,7 +98,7 @@ print('svm fit done')
 predicate_list = clf.predict(feature_list)
 '''
 
-net = NeuralNetwork([100], training_list, 0.001, 30)
+net = NeuralNetwork([100], training_list, 0.001, 20)
 begin = time.time()
 end = time.time()
 print('train time:', end - begin)
