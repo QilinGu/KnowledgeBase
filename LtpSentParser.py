@@ -31,16 +31,16 @@ class LtpSentParser:
     def dpt(self, sent): return self.parse(sent, 'dp')
 
 if __name__ == "__main__":
-    input_file = open("/home/ezio/filespace/data/plain_sentences.txt", 'r')
-    pos_file   = open("/home/ezio/filespace/data/pos_sentences.txt"  , 'a', 1)
-    ner_file   = open("/home/ezio/filespace/data/ner_sentences.txt"  , 'a', 1)
-    dpt_file   = open("/home/ezio/filespace/data/dpt_sentences.txt"  , 'a', 1)
+    input_file = open("/Users/warbean/filespace/data/plain_sentences.txt", 'r')
+    pos_file   = open("/Users/warbean/filespace/data/pos_sentences.txt"  , 'a', 1)
+    ner_file   = open("/Users/warbean/filespace/data/ner_sentences.txt"  , 'a', 1)
+    dpt_file   = open("/Users/warbean/filespace/data/dpt_sentences.txt"  , 'a', 1)
     parser = LtpSentParser()
     i = 0
     for line in input_file:
         i += 1
         print('-----------------', i)
-        #if i <= 1427: continue
+        if i <= 13792: continue
         sent = line.strip()
 
         pos_sent = parser.pos(sent)
