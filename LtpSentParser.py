@@ -40,7 +40,7 @@ if __name__ == "__main__":
     for line in input_file:
         i += 1
         print('-----------------', i)
-        if i <= 13792: continue
+        if i <= 54620: continue
         sent = line.strip()
 
         pos_sent = parser.pos(sent)

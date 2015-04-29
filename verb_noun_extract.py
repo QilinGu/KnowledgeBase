@@ -41,7 +41,11 @@ while True:
         except:
             continue
 
-        if pos1 == 'v' and pos2[0] == 'n':
+        if pos1 == 'v' and pos2[0] == 'n' and (dependency == 'ATT' or dependency == 'VOB'):
             verb_noun_dict[(dpt_word1, dpt_word2)][dependency] += 1
             verb_noun_dict[(dpt_word1, dpt_word2)]['all'] += 1
 
+att_pair = [(key, value['ATT']) for key, value in verb_noun_dict.items() if value['ATT'] > 0]
+att_pair.sort(key = lambda x: x[1], reverse = True)
+vob_pair = [(key, value['VOB']) for key, value in verb_noun_dict.items() if value['VOB'] > 0]
+vob_pair.sort(key = lambda x: x[1], reverse = True)
